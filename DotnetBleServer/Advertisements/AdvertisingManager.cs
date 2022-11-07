@@ -15,6 +15,24 @@ namespace DotnetBleServer.Advertisements
             _Context = context;
         }
 
+        public async Task<byte> GetActiveInstances()
+        {
+            LEAdvertisingManager1Properties props = await GetAdvertisingManager().GetAllAsync();
+            return props.ActiveInstances;
+        }
+
+        public async Task<byte> GetSupportedInstances()
+        {
+            LEAdvertisingManager1Properties props = await GetAdvertisingManager().GetAllAsync();
+            return props.SupportedInstances;
+        }
+
+        public async Task<string[]> GetSupportedIncludes()
+        {
+            LEAdvertisingManager1Properties props = await GetAdvertisingManager().GetAllAsync();
+            return props.SupportedIncludes;
+        }
+
         public async Task RegisterAdvertisement(Advertisement advertisement)
         {
             await _Context.Connection.RegisterObjectAsync(advertisement);
@@ -24,6 +42,15 @@ namespace DotnetBleServer.Advertisements
                 new Dictionary<string, object>());
 
             Console.WriteLine($"advertisement {advertisement.ObjectPath} registered in BlueZ advertising manager");
+        }
+
+        public async Task UnregisterAdvertisement(Advertisement advertisement)
+        {
+            await GetAdvertisingManager().UnregisterAdvertisementAsync(((IDBusObject) advertisement).ObjectPath);
+            Console.WriteLine($"advertisement {advertisement.ObjectPath} unregistered in BlueZ advertising manager");
+
+            _Context.Connection.UnregisterObject(advertisement);
+            Console.WriteLine($"advertisement object {advertisement.ObjectPath} deleted");
         }
 
         private ILEAdvertisingManager1 GetAdvertisingManager()

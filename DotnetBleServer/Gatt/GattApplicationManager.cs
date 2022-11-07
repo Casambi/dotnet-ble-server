@@ -17,11 +17,17 @@ namespace DotnetBleServer.Gatt
             _ServerContext = serverContext;
         }
 
-        public async Task RegisterGattApplication(IEnumerable<GattServiceDescription> gattServiceDescriptions)
+        public async Task<string> RegisterGattApplication(IEnumerable<GattServiceDescription> gattServiceDescriptions)
         {
             var applicationObjectPath = GenerateApplicationObjectPath();
             await BuildApplicationTree(applicationObjectPath, gattServiceDescriptions);
             await RegisterApplicationInBluez(applicationObjectPath);
+            return applicationObjectPath;
+        }
+
+        public async Task UnregisterGattApplication(string applicationObjectPath)
+        {
+            await UnregisterApplicationInBluez(applicationObjectPath);
         }
 
         private static string GenerateApplicationObjectPath()
@@ -55,6 +61,12 @@ namespace DotnetBleServer.Gatt
         {
             var gattManager = _ServerContext.Connection.CreateProxy<IGattManager1>("org.bluez", "/org/bluez/hci0");
             await gattManager.RegisterApplicationAsync(new ObjectPath(applicationObjectPath), new Dictionary<string, object>());
+        }
+
+        private async Task UnregisterApplicationInBluez(string applicationObjectPath)
+        {
+            var gattManager = _ServerContext.Connection.CreateProxy<IGattManager1>("org.bluez", "/org/bluez/hci0");
+            await gattManager.UnregisterApplicationAsync(new ObjectPath(applicationObjectPath));
         }
 
         private async Task<GattApplication> BuildGattApplication(string applicationObjectPath)

@@ -11,6 +11,8 @@ namespace DotnetBleServer.Core
     interface IObjectManager : IDBusObject
     {
         Task<IDictionary<ObjectPath, IDictionary<string, IDictionary<string, object>>>> GetManagedObjectsAsync();
+        Task<IDisposable> WatchInterfacesAddedAsync(Action<(ObjectPath @object, IDictionary<string, IDictionary<string, object>> interfaces)> handler, Action<Exception> onError = null);
+        Task<IDisposable> WatchInterfacesRemovedAsync(Action<(ObjectPath @object, string[] interfaces)> handler, Action<Exception> onError = null);
     }
 
     [DBusInterface("org.bluez.AgentManager1")]
@@ -36,7 +38,7 @@ namespace DotnetBleServer.Core
     }
 
     [DBusInterface("org.bluez.Adapter1")]
-    interface IAdapter1 : IDBusObject
+    public interface IAdapter1 : IDBusObject
     {
         Task StartDiscoveryAsync();
         Task SetDiscoveryFilterAsync(IDictionary<string, object> Properties);
@@ -50,7 +52,7 @@ namespace DotnetBleServer.Core
     }
 
     [Dictionary]
-    class Adapter1Properties
+    public class Adapter1Properties
     {
         private string _Address = default (string);
         public string Address
@@ -343,5 +345,688 @@ namespace DotnetBleServer.Core
     {
         Task RegisterAsync(string Uuid, string Bridge);
         Task UnregisterAsync(string Uuid);
+    }
+
+        [DBusInterface("org.bluez.Device1")]
+    public interface IDevice1 : IDBusObject
+    {
+        Task DisconnectAsync();
+        Task ConnectAsync();
+        Task ConnectProfileAsync(string UUID);
+        Task DisconnectProfileAsync(string UUID);
+        Task PairAsync();
+        Task CancelPairingAsync();
+        Task<T> GetAsync<T>(string prop);
+        Task<Device1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class Device1Properties
+    {
+        private string _Address = default (string);
+        public string Address
+        {
+            get
+            {
+                return _Address;
+            }
+
+            set
+            {
+                _Address = (value);
+            }
+        }
+
+        private string _AddressType = default (string);
+        public string AddressType
+        {
+            get
+            {
+                return _AddressType;
+            }
+
+            set
+            {
+                _AddressType = (value);
+            }
+        }
+
+        private string _Name = default (string);
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+
+            set
+            {
+                _Name = (value);
+            }
+        }
+
+        private string _Alias = default (string);
+        public string Alias
+        {
+            get
+            {
+                return _Alias;
+            }
+
+            set
+            {
+                _Alias = (value);
+            }
+        }
+
+        private uint _Class = default (uint);
+        public uint Class
+        {
+            get
+            {
+                return _Class;
+            }
+
+            set
+            {
+                _Class = (value);
+            }
+        }
+
+        private ushort _Appearance = default (ushort);
+        public ushort Appearance
+        {
+            get
+            {
+                return _Appearance;
+            }
+
+            set
+            {
+                _Appearance = (value);
+            }
+        }
+
+        private string _Icon = default (string);
+        public string Icon
+        {
+            get
+            {
+                return _Icon;
+            }
+
+            set
+            {
+                _Icon = (value);
+            }
+        }
+
+        private bool _Paired = default (bool);
+        public bool Paired
+        {
+            get
+            {
+                return _Paired;
+            }
+
+            set
+            {
+                _Paired = (value);
+            }
+        }
+
+        private bool _Trusted = default (bool);
+        public bool Trusted
+        {
+            get
+            {
+                return _Trusted;
+            }
+
+            set
+            {
+                _Trusted = (value);
+            }
+        }
+
+        private bool _Blocked = default (bool);
+        public bool Blocked
+        {
+            get
+            {
+                return _Blocked;
+            }
+
+            set
+            {
+                _Blocked = (value);
+            }
+        }
+
+        private bool _LegacyPairing = default (bool);
+        public bool LegacyPairing
+        {
+            get
+            {
+                return _LegacyPairing;
+            }
+
+            set
+            {
+                _LegacyPairing = (value);
+            }
+        }
+
+        private short _RSSI = default (short);
+        public short RSSI
+        {
+            get
+            {
+                return _RSSI;
+            }
+
+            set
+            {
+                _RSSI = (value);
+            }
+        }
+
+        private bool _Connected = default (bool);
+        public bool Connected
+        {
+            get
+            {
+                return _Connected;
+            }
+
+            set
+            {
+                _Connected = (value);
+            }
+        }
+
+        private string[] _UUIDs = default (string[]);
+        public string[] UUIDs
+        {
+            get
+            {
+                return _UUIDs;
+            }
+
+            set
+            {
+                _UUIDs = (value);
+            }
+        }
+
+        private string _Modalias = default (string);
+        public string Modalias
+        {
+            get
+            {
+                return _Modalias;
+            }
+
+            set
+            {
+                _Modalias = (value);
+            }
+        }
+
+        private ObjectPath _Adapter = default (ObjectPath);
+        public ObjectPath Adapter
+        {
+            get
+            {
+                return _Adapter;
+            }
+
+            set
+            {
+                _Adapter = (value);
+            }
+        }
+
+        private IDictionary<ushort, object> _ManufacturerData = default (IDictionary<ushort, object>);
+        public IDictionary<ushort, object> ManufacturerData
+        {
+            get
+            {
+                return _ManufacturerData;
+            }
+
+            set
+            {
+                _ManufacturerData = (value);
+            }
+        }
+
+        private IDictionary<string, object> _ServiceData = default (IDictionary<string, object>);
+        public IDictionary<string, object> ServiceData
+        {
+            get
+            {
+                return _ServiceData;
+            }
+
+            set
+            {
+                _ServiceData = (value);
+            }
+        }
+
+        private short _TxPower = default (short);
+        public short TxPower
+        {
+            get
+            {
+                return _TxPower;
+            }
+
+            set
+            {
+                _TxPower = (value);
+            }
+        }
+
+        private bool _ServicesResolved = default (bool);
+        public bool ServicesResolved
+        {
+            get
+            {
+                return _ServicesResolved;
+            }
+
+            set
+            {
+                _ServicesResolved = (value);
+            }
+        }
+    }
+
+    public static class Device1Extensions
+    {
+        public static Task<string> GetAddressAsync(this IDevice1 o) => o.GetAsync<string>("Address");
+        public static Task<string> GetAddressTypeAsync(this IDevice1 o) => o.GetAsync<string>("AddressType");
+        public static Task<string> GetNameAsync(this IDevice1 o) => o.GetAsync<string>("Name");
+        public static Task<string> GetAliasAsync(this IDevice1 o) => o.GetAsync<string>("Alias");
+        public static Task<uint> GetClassAsync(this IDevice1 o) => o.GetAsync<uint>("Class");
+        public static Task<ushort> GetAppearanceAsync(this IDevice1 o) => o.GetAsync<ushort>("Appearance");
+        public static Task<string> GetIconAsync(this IDevice1 o) => o.GetAsync<string>("Icon");
+        public static Task<bool> GetPairedAsync(this IDevice1 o) => o.GetAsync<bool>("Paired");
+        public static Task<bool> GetTrustedAsync(this IDevice1 o) => o.GetAsync<bool>("Trusted");
+        public static Task<bool> GetBlockedAsync(this IDevice1 o) => o.GetAsync<bool>("Blocked");
+        public static Task<bool> GetLegacyPairingAsync(this IDevice1 o) => o.GetAsync<bool>("LegacyPairing");
+        public static Task<short> GetRSSIAsync(this IDevice1 o) => o.GetAsync<short>("RSSI");
+        public static Task<bool> GetConnectedAsync(this IDevice1 o) => o.GetAsync<bool>("Connected");
+        public static Task<string[]> GetUUIDsAsync(this IDevice1 o) => o.GetAsync<string[]>("UUIDs");
+        public static Task<string> GetModaliasAsync(this IDevice1 o) => o.GetAsync<string>("Modalias");
+        public static Task<IAdapter1> GetAdapterAsync(this IDevice1 o) => o.GetAsync<IAdapter1>("Adapter");
+        public static Task<IDictionary<ushort, object>> GetManufacturerDataAsync(this IDevice1 o) => o.GetAsync<IDictionary<ushort, object>>("ManufacturerData");
+        public static Task<IDictionary<string, object>> GetServiceDataAsync(this IDevice1 o) => o.GetAsync<IDictionary<string, object>>("ServiceData");
+        public static Task<short> GetTxPowerAsync(this IDevice1 o) => o.GetAsync<short>("TxPower");
+        public static Task<bool> GetServicesResolvedAsync(this IDevice1 o) => o.GetAsync<bool>("ServicesResolved");
+        public static Task SetAliasAsync(this IDevice1 o, string val) => o.SetAsync("Alias", val);
+        public static Task SetTrustedAsync(this IDevice1 o, bool val) => o.SetAsync("Trusted", val);
+        public static Task SetBlockedAsync(this IDevice1 o, bool val) => o.SetAsync("Blocked", val);
+    }
+
+    [DBusInterface("org.bluez.Battery1")]
+    public interface IBattery1 : IDBusObject
+    {
+        Task<T> GetAsync<T>(string prop);
+        Task<Battery1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class Battery1Properties
+    {
+        private byte _Percentage = default (byte);
+        public byte Percentage
+        {
+            get
+            {
+                return _Percentage;
+            }
+
+            set
+            {
+                _Percentage = (value);
+            }
+        }
+    }
+
+    public static class Battery1Extensions
+    {
+        public static Task<byte> GetPercentageAsync(this IBattery1 o) => o.GetAsync<byte>("Percentage");
+    }
+
+    [DBusInterface("org.bluez.GattService1")]
+    public interface IGattService1 : IDBusObject
+    {
+        Task<T> GetAsync<T>(string prop);
+        Task<GattService1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class GattService1Properties
+    {
+        private string _UUID = default (string);
+        public string UUID
+        {
+            get
+            {
+                return _UUID;
+            }
+
+            set
+            {
+                _UUID = (value);
+            }
+        }
+
+        private ObjectPath _Device = default (ObjectPath);
+        public ObjectPath Device
+        {
+            get
+            {
+                return _Device;
+            }
+
+            set
+            {
+                _Device = (value);
+            }
+        }
+
+        private bool _Primary = default (bool);
+        public bool Primary
+        {
+            get
+            {
+                return _Primary;
+            }
+
+            set
+            {
+                _Primary = (value);
+            }
+        }
+
+        private ObjectPath[] _Includes = default (ObjectPath[]);
+        public ObjectPath[] Includes
+        {
+            get
+            {
+                return _Includes;
+            }
+
+            set
+            {
+                _Includes = (value);
+            }
+        }
+    }
+
+    public static class GattService1Extensions
+    {
+        public static Task<string> GetUUIDAsync(this IGattService1 o) => o.GetAsync<string>("UUID");
+        public static Task<IDevice1> GetDeviceAsync(this IGattService1 o) => o.GetAsync<IDevice1>("Device");
+        public static Task<bool> GetPrimaryAsync(this IGattService1 o) => o.GetAsync<bool>("Primary");
+        public static Task<ObjectPath[]> GetIncludesAsync(this IGattService1 o) => o.GetAsync<ObjectPath[]>("Includes");
+    }
+
+    [DBusInterface("org.bluez.GattCharacteristic1")]
+    public interface IGattCharacteristic1 : IDBusObject
+    {
+        Task<byte[]> ReadValueAsync(IDictionary<string, object> Options);
+        Task WriteValueAsync(byte[] Value, IDictionary<string, object> Options);
+        Task<(CloseSafeHandle fd, ushort mtu)> AcquireWriteAsync(IDictionary<string, object> Options);
+        Task<(CloseSafeHandle fd, ushort mtu)> AcquireNotifyAsync(IDictionary<string, object> Options);
+        Task StartNotifyAsync();
+        Task StopNotifyAsync();
+        Task<T> GetAsync<T>(string prop);
+        Task<GattCharacteristic1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class GattCharacteristic1Properties
+    {
+        private string _UUID = default (string);
+        public string UUID
+        {
+            get
+            {
+                return _UUID;
+            }
+
+            set
+            {
+                _UUID = (value);
+            }
+        }
+
+        private ObjectPath _Service = default (ObjectPath);
+        public ObjectPath Service
+        {
+            get
+            {
+                return _Service;
+            }
+
+            set
+            {
+                _Service = (value);
+            }
+        }
+
+        private byte[] _Value = default (byte[]);
+        public byte[] Value
+        {
+            get
+            {
+                return _Value;
+            }
+
+            set
+            {
+                _Value = (value);
+            }
+        }
+
+        private bool _Notifying = default (bool);
+        public bool Notifying
+        {
+            get
+            {
+                return _Notifying;
+            }
+
+            set
+            {
+                _Notifying = (value);
+            }
+        }
+
+        private string[] _Flags = default (string[]);
+        public string[] Flags
+        {
+            get
+            {
+                return _Flags;
+            }
+
+            set
+            {
+                _Flags = (value);
+            }
+        }
+
+        private bool _WriteAcquired = default (bool);
+        public bool WriteAcquired
+        {
+            get
+            {
+                return _WriteAcquired;
+            }
+
+            set
+            {
+                _WriteAcquired = (value);
+            }
+        }
+
+        private bool _NotifyAcquired = default (bool);
+        public bool NotifyAcquired
+        {
+            get
+            {
+                return _NotifyAcquired;
+            }
+
+            set
+            {
+                _NotifyAcquired = (value);
+            }
+        }
+    }
+
+    public static class GattCharacteristic1Extensions
+    {
+        public static Task<string> GetUUIDAsync(this IGattCharacteristic1 o) => o.GetAsync<string>("UUID");
+        public static Task<IGattService1> GetServiceAsync(this IGattCharacteristic1 o) => o.GetAsync<IGattService1>("Service");
+        public static Task<byte[]> GetValueAsync(this IGattCharacteristic1 o) => o.GetAsync<byte[]>("Value");
+        public static Task<bool> GetNotifyingAsync(this IGattCharacteristic1 o) => o.GetAsync<bool>("Notifying");
+        public static Task<string[]> GetFlagsAsync(this IGattCharacteristic1 o) => o.GetAsync<string[]>("Flags");
+        public static Task<bool> GetWriteAcquiredAsync(this IGattCharacteristic1 o) => o.GetAsync<bool>("WriteAcquired");
+        public static Task<bool> GetNotifyAcquiredAsync(this IGattCharacteristic1 o) => o.GetAsync<bool>("NotifyAcquired");
+    }
+
+    [DBusInterface("org.bluez.GattDescriptor1")]
+    public interface IGattDescriptor1 : IDBusObject
+    {
+        Task<byte[]> ReadValueAsync(IDictionary<string, object> Options);
+        Task WriteValueAsync(byte[] Value, IDictionary<string, object> Options);
+        Task<T> GetAsync<T>(string prop);
+        Task<GattDescriptor1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class GattDescriptor1Properties
+    {
+        private string _UUID = default (string);
+        public string UUID
+        {
+            get
+            {
+                return _UUID;
+            }
+
+            set
+            {
+                _UUID = (value);
+            }
+        }
+
+        private ObjectPath _Characteristic = default (ObjectPath);
+        public ObjectPath Characteristic
+        {
+            get
+            {
+                return _Characteristic;
+            }
+
+            set
+            {
+                _Characteristic = (value);
+            }
+        }
+
+        private byte[] _Value = default (byte[]);
+        public byte[] Value
+        {
+            get
+            {
+                return _Value;
+            }
+
+            set
+            {
+                _Value = (value);
+            }
+        }
+    }
+
+    public static class GattDescriptor1Extensions
+    {
+        public static Task<string> GetUUIDAsync(this IGattDescriptor1 o) => o.GetAsync<string>("UUID");
+        public static Task<IGattCharacteristic1> GetCharacteristicAsync(this IGattDescriptor1 o) => o.GetAsync<IGattCharacteristic1>("Characteristic");
+        public static Task<byte[]> GetValueAsync(this IGattDescriptor1 o) => o.GetAsync<byte[]>("Value");
+    }
+
+    [DBusInterface("org.bluez.MediaControl1")]
+    public interface IMediaControl1 : IDBusObject
+    {
+        Task PlayAsync();
+        Task PauseAsync();
+        Task StopAsync();
+        Task NextAsync();
+        Task PreviousAsync();
+        Task VolumeUpAsync();
+        Task VolumeDownAsync();
+        Task FastForwardAsync();
+        Task RewindAsync();
+        Task<T> GetAsync<T>(string prop);
+        Task<MediaControl1Properties> GetAllAsync();
+        Task SetAsync(string prop, object val);
+        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+    }
+
+    [Dictionary]
+    public class MediaControl1Properties
+    {
+        private bool _Connected = default (bool);
+        public bool Connected
+        {
+            get
+            {
+                return _Connected;
+            }
+
+            set
+            {
+                _Connected = (value);
+            }
+        }
+
+        private ObjectPath _Player = default (ObjectPath);
+        public ObjectPath Player
+        {
+            get
+            {
+                return _Player;
+            }
+
+            set
+            {
+                _Player = (value);
+            }
+        }
+    }
+
+    public static class MediaControl1Extensions
+    {
+        public static Task<bool> GetConnectedAsync(this IMediaControl1 o) => o.GetAsync<bool>("Connected");
+        public static Task<ObjectPath> GetPlayerAsync(this IMediaControl1 o) => o.GetAsync<ObjectPath>("Player");
     }
 }

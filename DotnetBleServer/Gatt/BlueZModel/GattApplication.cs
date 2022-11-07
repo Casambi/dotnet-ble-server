@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DotnetBleServer.Core;
 using Tmds.DBus;
+using System;
 
 namespace DotnetBleServer.Gatt.BlueZModel
 {
@@ -35,6 +36,18 @@ namespace DotnetBleServer.Gatt.BlueZModel
             }
 
             return Task.FromResult(result);
+        }
+
+        public async Task<IDisposable> WatchInterfacesAddedAsync(Action<(ObjectPath @object, IDictionary<string, IDictionary<string, object>> interfaces)> handler, Action<Exception> onError = null)
+        {
+            var objectManager = Connection.System.CreateProxy<IObjectManager>("org.bluez", ObjectPath);
+            return await objectManager.WatchInterfacesAddedAsync(handler, onError);
+        }
+
+        public async Task<IDisposable> WatchInterfacesRemovedAsync(Action<(ObjectPath @object, string[] interfaces)> handler, Action<Exception> onError = null)
+        {
+            var objectManager = Connection.System.CreateProxy<IObjectManager>("org.bluez", ObjectPath);
+            return await objectManager.WatchInterfacesRemovedAsync(handler, onError);
         }
 
         public GattService AddService(GattService1Properties gattService)
