@@ -21,12 +21,12 @@ namespace DotnetBleServer.Gatt.BlueZModel
 
         public Task<byte[]> ReadValueAsync(IDictionary<string, object> options)
         {
-            return _CharacteristicSource.ReadValueAsync();
+            return _CharacteristicSource.ReadValueAsync(options);
         }
 
         public Task WriteValueAsync(byte[] value, IDictionary<string, object> options)
         {
-            return _CharacteristicSource.WriteValueAsync(value);
+            return _CharacteristicSource.WriteValueAsync(value, options);
         }
 
         public Task StartNotifyAsync()
