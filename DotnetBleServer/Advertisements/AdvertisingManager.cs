@@ -36,21 +36,14 @@ namespace DotnetBleServer.Advertisements
         public async Task RegisterAdvertisement(Advertisement advertisement)
         {
             await _Context.Connection.RegisterObjectAsync(advertisement);
-            Console.WriteLine($"advertisement object {advertisement.ObjectPath} created");
-
             await GetAdvertisingManager().RegisterAdvertisementAsync(((IDBusObject) advertisement).ObjectPath,
                 new Dictionary<string, object>());
-
-            Console.WriteLine($"advertisement {advertisement.ObjectPath} registered in BlueZ advertising manager");
         }
 
         public async Task UnregisterAdvertisement(Advertisement advertisement)
         {
             await GetAdvertisingManager().UnregisterAdvertisementAsync(((IDBusObject) advertisement).ObjectPath);
-            Console.WriteLine($"advertisement {advertisement.ObjectPath} unregistered in BlueZ advertising manager");
-
             _Context.Connection.UnregisterObject(advertisement);
-            Console.WriteLine($"advertisement object {advertisement.ObjectPath} deleted");
         }
 
         private ILEAdvertisingManager1 GetAdvertisingManager()
