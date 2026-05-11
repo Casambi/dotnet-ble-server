@@ -1,4 +1,10 @@
 <Project>
+  <!--
+    When built standalone (outside the gateway-manager-app solution), this file
+    enables Central Package Management for the submodule's own projects.
+    When built as part of the parent solution, the root Directory.Packages.props
+    is used and this file is ignored by NuGet CPM.
+  -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
